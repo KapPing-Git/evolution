@@ -67,7 +67,7 @@ void ALiveArenaWidget::paintEvent(QPaintEvent *event)
           QRect objectRect(x,y,cellWidth,cellHeight);
 
           ALiveObject *liveObject;
-          ACommand currCommand;
+          AAbstructCommand *currCommand;
           QColor liveColor;
           int transparencyLevel = 255;
           switch (m_arena->typeObject(numCol,numRow))
@@ -94,21 +94,21 @@ void ALiveArenaWidget::paintEvent(QPaintEvent *event)
 
               painter.setBrush(QBrush(liveColor));
               painter.drawEllipse(objectRect);
-              switch (currCommand.m_commandName)
+              if (currCommand->name() == commandName_Action)
                 {
-                case commandName_Action:
-                  switch (currCommand.m_command.action.action())
+                  Action *action = (Action*)currCommand;
+                  switch (action->action())
                     {
                     case action_eat:
-                      drawEat(&painter,currCommand.m_command.action.course(),objectRect);
+                      drawEat(&painter,action->course(),objectRect);
                       break;
 
                     case action_hit:
-                      drawHit(&painter,currCommand.m_command.action.course(),objectRect);
+                      drawHit(&painter,action->course(),objectRect);
                       break;
 
                     case action_move:
-                      drawMove(&painter,currCommand.m_command.action.course(),objectRect);
+                      drawMove(&painter,action->course(),objectRect);
                       break;
 
                     case action_shot:
@@ -122,10 +122,6 @@ void ALiveArenaWidget::paintEvent(QPaintEvent *event)
                     default:
                       break;
                     }
-                  break;
-
-                default:
-                  break;
                 }
               break;
 

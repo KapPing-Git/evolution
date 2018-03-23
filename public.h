@@ -45,6 +45,13 @@ enum ECommandName
   commandName_end
 };
 
+//enum EDefinitionMethodOfSurvived
+//{
+//  definitionMethodOfSurvived_lastN,
+//  definitionMethodOfSurvived_AsLongAsMany
+//};
+
+
 const qreal FOOD_COUNT = 50;
 
 inline double dRandom(double min,double max)

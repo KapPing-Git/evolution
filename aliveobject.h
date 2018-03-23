@@ -10,17 +10,28 @@
 #include "public.h"
 #include "acommand.h"
 
-class ACommand;
+struct AObjectCommonSettings
+{
+  ALiveArena *arena;
+  ACommandGenerator *generator;
+  double chanceEvolution = 0.3;
+  qreal changeProgrammSizeChance;
+  AAbstructCommand *generateCommand(int maxCommandCount)
+  {return generator->generate(maxCommandCount,arena);}
+};
+
+class AAbstructCommand;
 
 class ALiveObject : public AAbstructLiveObject
 {
   Q_OBJECT
 public:
   explicit ALiveObject(AObjectCommonSettings *commonSettings, QObject *parent = 0);
+  ~ALiveObject();
   void createChanceProgramm();
   void evolution();
   void exec();
-  ALiveObject *clone(QObject *parent = 0);
+  ALiveObject *born(QObject *parent = 0);
   int x();
   void setX(int x);
   int y();
@@ -34,15 +45,15 @@ public:
   virtual void damage(qreal energyCount);
   virtual qreal hitPower();
   virtual bool isDie();
-  ACommand currCommand();
-  ACommand lastCommand();
+  AAbstructCommand* currCommand();
+  AAbstructCommand* lastCommand();
   qreal energy();
   bool isNoob();
   QString name();
   int stabilityTime();
   QString hashByProgramm();
-  QList<ACommand> programm();
-  void setProgramm(QList<ACommand> programm);
+  QList<AAbstructCommand*> programm();
+  void setProgramm(QList<AAbstructCommand*> programm);
   bool canReproduction();
   int startCommandCount() const;
   void setStartCommandCount(int startCommandCount);
@@ -51,15 +62,28 @@ public:
 
   friend QDataStream &operator<<(QDataStream &stream, const ALiveObject &object)
   {
-    stream << object.m_startCommandCount << object.m_commandCountChangeable << object.m_programm << object.m_commandNumber << object.m_energy << object.m_armor << object.m_hitPower <<
-              object.m_x << object.m_y << object.m_iNuub << object.m_henotipStabilityTime << object.m_name;
+    stream << object.m_startCommandCount << object.m_commandCountChangeable << object.m_commandNumber << object.m_energy << object.m_armor << object.m_hitPower <<
+              object.m_x << object.m_y << object.m_iNuub << object.m_henotipStabilityTime << object.m_name << object.m_programm.count();
+    for (int i = 0;i < object.m_programm.count();i++)
+      {
+        stream << (quint8)object.m_programm[i]->name() << *object.m_programm[i];
+      }
     return stream;
   }
   friend QDataStream &operator>>(QDataStream &stream, ALiveObject &object)
   {
-    stream >> object.m_startCommandCount >> object.m_commandCountChangeable >> object.m_programm >> object.m_commandNumber >> object.m_energy >> object.m_armor >> object.m_hitPower >>
-        object.m_x >> object.m_y >> object.m_iNuub >> object.m_henotipStabilityTime >> object.m_name;
-    object.updateCommonSettings();
+    int programmSize = 0;
+    stream >> object.m_startCommandCount >> object.m_commandCountChangeable >> object.m_commandNumber >> object.m_energy >> object.m_armor >> object.m_hitPower >>
+        object.m_x >> object.m_y >> object.m_iNuub >> object.m_henotipStabilityTime >> object.m_name >> programmSize;
+    for (int i = 0; i < programmSize;i++)
+      {
+        quint8 type;
+        stream >> type;
+        AAbstructCommand *command = ACommandGenerator::commandByType((ECommandName)type,programmSize,object.m_commonSettings->arena);
+        stream >> *command;
+        object.m_programm << command;
+      }
+//    object.updateCommonSettings();
     return stream;
   }
 
@@ -73,6 +97,7 @@ public slots:
 
 private:
   void updateCommonSettings();
+//  AAbstructCommand *createCommand();
 
   bool m_commandCountChangeable;
   //  bool m_ifLengthActive;
@@ -80,7 +105,7 @@ private:
   const qreal BEGIN_ENERGY = 100;
   const qreal BEGIN_ARMOR = 100;
   const qreal HIT_POWER = 100;
-  QList<ACommand> m_programm;
+  QList<AAbstructCommand*> m_programm;
   int m_commandNumber;
   int m_lastExecutedCommandNumber;
 

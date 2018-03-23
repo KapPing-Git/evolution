@@ -9,22 +9,17 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
   // создаём менеждер живых обьектов и связываем его и визуализатор арены с собственно ареной
   m_liveManager = new ALiveManager(&m_arena,this);
-//  m_liveManager->createFirstGeneration();
+  //  m_liveManager->createFirstGeneration();
   connect(m_liveManager,&ALiveManager::nextGeneration,this,&MainWindow::on_nextGeneration);
   ui->liveArenaWidget->setArena(&m_arena);
   m_liveTimeSeries = new AChartSeries(this,"gr");
   ui->mainChart->addSeries(m_liveTimeSeries);
 
   //загружаем настройки из файлов настройки
-  m_mySettings = new AMySettings(settingsFileName(),this);
+
+  m_mySettings = new AMySettings(settingsFileName(),m_liveManager->commandGenerator(),this);
   connect(m_mySettings,&AMySettings::changed,this,&MainWindow::onSettingsChanged);
-  m_liveManager->setPermanentFoodGeneration(m_mySettings->permanentFoodGeneration());
-  m_liveManager->setFoodGenerationChance(m_mySettings->foodGenerationChance());
-  m_liveManager->setRealTimeReproduction(m_mySettings->realTimeReproduction());
-  m_liveManager->setBorder(m_mySettings->arenaBorderExist());
-  m_liveManager->setLiveObjectProgrammSize(m_mySettings->liveObjectProgrammSize());
-  m_liveManager->setLiveObjectChangeableProgrammSize(m_mySettings->liveObjectChangeableProgrammSize());
-  m_liveManager->setLiveObjectsIfLengthActive(m_mySettings->liveObjectIfLengthActive());
+  applySettings();
 
   m_liveManager->createFirstGeneration();
 }
@@ -70,8 +65,8 @@ void MainWindow::on_nextGeneration()
   ui->numGenerationLabel->setText(tr("Поколение № ") + numGeneration + tr(" время жизни=") + liveTime + tr(" макс. время жизни=") + maxLiveTime);
   ui->bestSurvivedWidget->addSurveved(m_liveManager->lastSurvived());
   m_liveTimeSeries->addPoint(m_liveManager->numGeneration(),m_liveManager->lastGenerationLiveTime());
-//  saveBests("/home/kap/liveObjects/отладка/" + QString::number(m_liveManager->numGeneration()) + "_" +
-//            QString::number(m_liveManager->lastGenerationLiveTime()) + ".live",m_liveManager);
+  //  saveBests("/home/kap/liveObjects/отладка/" + QString::number(m_liveManager->numGeneration()) + "_" +
+  //            QString::number(m_liveManager->lastGenerationLiveTime()) + ".live",m_liveManager);
 }
 
 void MainWindow::saveBests(QString fileName, ALiveManager *manager)
@@ -169,11 +164,23 @@ void MainWindow::on_settingsChangeAction_triggered()
 
 void MainWindow::onSettingsChanged()
 {
+  applySettings();
+}
+
+void MainWindow::applySettings()
+{
   m_liveManager->setPermanentFoodGeneration(m_mySettings->permanentFoodGeneration());
   m_liveManager->setFoodGenerationChance(m_mySettings->foodGenerationChance());
   m_liveManager->setRealTimeReproduction(m_mySettings->realTimeReproduction());
   m_liveManager->setBorder(m_mySettings->arenaBorderExist());
   m_liveManager->setLiveObjectProgrammSize(m_mySettings->liveObjectProgrammSize());
   m_liveManager->setLiveObjectChangeableProgrammSize(m_mySettings->liveObjectChangeableProgrammSize());
-  m_liveManager->setLiveObjectsIfLengthActive(m_mySettings->liveObjectIfLengthActive());
+  m_liveManager->setLiveObjectChangeProgrammSizeChance(m_mySettings->liveObjectChangeProgrammSizeChance());
+  m_liveManager->setLiveObjectStartCount(m_mySettings->liveObjectStartCount());
+  m_liveManager->setLiveObjectMinCount(m_mySettings->liveObjectMinCount());
+  m_liveManager->setFoodCount(m_mySettings->foodCount());
+  m_liveManager->setToxinCount(m_mySettings->toxinCount());
+  m_liveManager->setWallCount(m_mySettings->wallCount());
+  for ( int i = 0; i < m_mySettings->commandDescrCount();i++)
+    m_liveManager->commandGenerator()->setCommandOptions(m_mySettings->commandName(i),m_mySettings->commandExist(i),m_mySettings->commandChance(i));
 }

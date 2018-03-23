@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "ASettings/amysettings.h"
+#include "acommandssettingswidget.h"
 
 namespace Ui {
   class AMySettingsForm;

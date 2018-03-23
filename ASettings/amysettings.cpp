@@ -1,6 +1,6 @@
 #include "amysettings.h"
 
-AMySettings::AMySettings(QString fileName, QObject *parent) : QObject(parent)
+AMySettings::AMySettings(QString fileName, ACommandGenerator *commandGenerator, QObject *parent) : QObject(parent)
 {
   m_transaction = false;
 
@@ -17,7 +17,26 @@ AMySettings::AMySettings(QString fileName, QObject *parent) : QObject(parent)
   m_arenaBorderExist = m_settings->value("arenaBorderExist").toBool();
   m_liveObjectProgrammSize = m_settings->value("liveObjectProgrammSize").toDouble();
   m_liveObjectChangeableProgrammSize = m_settings->value("liveObjectChangeableProgrammSize").toBool();
-  m_liveObjectIfLengthActive = m_settings->value("liveObjectIfLengthActive").toBool();
+  m_liveObjectChangeProgrammSizeChance = m_settings->value("liveObjectChangeProgrammSizeChance",0.1).toFloat();
+  m_liveObjectStartCount = m_settings->value("liveObjectStartCount",200).toInt();
+  m_liveObjectMinCount = m_settings->value("liveObjectMinCount",8).toInt();
+  m_foodCount = m_settings->value("foodCount",1000).toInt();
+  m_toxinCount = m_settings->value("toxinCount",100).toInt();
+  m_wallCount = m_settings->value("wallCount",100).toInt();
+  ////загружаем данные о списке комманд
+  QStringList commandsNames = commandGenerator->commandNames();
+  m_settings->beginGroup("commandList");
+  for (int i = 0;i < commandsNames.count();i++)
+    {
+      ACommandDescription descr;
+      descr.name = commandsNames[i];
+      m_settings->beginGroup(commandsNames[i]);
+      descr.exist = m_settings->value("exist").toBool();
+      descr.chance = m_settings->value("chance").toInt();
+      m_settings->endGroup();
+      m_commandsDescription << descr;
+    }
+  m_settings->endGroup();
 }
 
 AMySettings::~AMySettings()
@@ -109,14 +128,119 @@ void AMySettings::setLiveObjectChangeableProgrammSize(bool liveObjectChangeableP
   if (!m_transaction) emit changed();
 }
 
-bool AMySettings::liveObjectIfLengthActive() const
+int AMySettings::commandDescrCount()
 {
-  return m_liveObjectIfLengthActive;
+  return m_commandsDescription.count();
 }
 
-void AMySettings::setLiveObjectIfLengthActive(bool liveObjectIfLengthActive)
+QString AMySettings::commandName(int num)
 {
-  m_liveObjectIfLengthActive = liveObjectIfLengthActive;
-  m_settings->setValue("liveObjectIfLengthActive",liveObjectIfLengthActive);
+  return m_commandsDescription[num].name;
+}
+
+bool AMySettings::commandExist(int num)
+{
+  return m_commandsDescription[num].exist;
+}
+
+int AMySettings::commandChance(int num)
+{
+  return m_commandsDescription[num].chance;
+}
+
+void AMySettings::setCommandDescr(int num, QString name, bool exist, int chance)
+{
+  m_commandsDescription[num].name = name;
+  m_commandsDescription[num].exist = exist;
+  m_commandsDescription[num].chance = chance;
+  m_settings->beginGroup("commandList");
+  m_settings->beginGroup(name);
+  m_settings->setValue("exist",exist);
+  m_settings->setValue("chance",chance);
+  m_settings->endGroup();
+  m_settings->endGroup();
+}
+
+int AMySettings::liveObjectStartCount() const
+{
+    return m_liveObjectStartCount;
+}
+
+void AMySettings::setLiveObjectStartCount(int liveObjectStartCount)
+{
+    m_liveObjectStartCount = liveObjectStartCount;
+    m_settings->setValue("liveObjectStartCount",liveObjectStartCount);
+    if (!m_transaction) emit changed();
+}
+
+int AMySettings::liveObjectMinCount() const
+{
+    return m_liveObjectMinCount;
+}
+
+void AMySettings::setLiveObjectMinCount(int liveObjectMinCount)
+{
+    m_liveObjectMinCount = liveObjectMinCount;
+    m_settings->setValue("liveObjectMinCount",liveObjectMinCount);
+    if (!m_transaction) emit changed();
+}
+
+int AMySettings::foodCount() const
+{
+    return m_foodCount;
+}
+
+void AMySettings::setFoodCount(int foodCount)
+{
+    m_foodCount = foodCount;
+    m_settings->setValue("foodCount",foodCount);
+    if (!m_transaction) emit changed();
+}
+
+int AMySettings::toxinCount() const
+{
+    return m_toxinCount;
+}
+
+void AMySettings::setToxinCount(int toxinCount)
+{
+    m_toxinCount = toxinCount;
+    m_settings->setValue("toxinCount",toxinCount);
+    if (!m_transaction) emit changed();
+}
+
+int AMySettings::wallCount() const
+{
+    return m_wallCount;
+}
+
+void AMySettings::setWallCount(int wallCount)
+{
+    m_wallCount = wallCount;
+    m_settings->setValue("wallCount",wallCount);
+    if (!m_transaction) emit changed();
+}
+
+float AMySettings::liveObjectChangeProgrammSizeChance() const
+{
+  return m_liveObjectChangeProgrammSizeChance;
+}
+
+void AMySettings::setLiveObjectChangeProgrammSizeChance(float liveObjectChangeProgrammSizeChance)
+{
+  m_liveObjectChangeProgrammSizeChance = liveObjectChangeProgrammSizeChance;
+  m_settings->setValue("liveObjectChangeProgrammSizeChance",liveObjectChangeProgrammSizeChance);
   if (!m_transaction) emit changed();
 }
+
+//bool AMySettings::liveObjectIfLengthActive() const
+//{
+//  return m_liveObjectIfLengthActive;
+//}
+
+//void AMySettings::setLiveObjectIfLengthActive(bool liveObjectIfLengthActive)
+//{
+//  m_liveObjectIfLengthActive = liveObjectIfLengthActive;
+//  m_settings->setValue("liveObjectIfLengthActive",liveObjectIfLengthActive);
+//  if (!m_transaction) emit changed();
+//}

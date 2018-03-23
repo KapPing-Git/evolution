@@ -12,7 +12,7 @@ public:
   virtual void createChanceProgramm() = 0;
   virtual void evolution() = 0;
   virtual void exec() = 0;
-  virtual AAbstructLiveObject *clone(QObject *parent = 0) = 0;
+  virtual AAbstructLiveObject *born(QObject *parent = 0) = 0;
   virtual int x() = 0;
   virtual void setX(int x) = 0;
   virtual int y() = 0;

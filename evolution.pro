@@ -51,7 +51,9 @@ SOURCES += main.cpp\
     AChart/AChartAxisPainter/achartaxispainter.cpp \
     asourcecodeform.cpp \
     ASettings/amysettings.cpp \
-    ASettings/amysettingsform.cpp
+    ASettings/amysettingsform.cpp \
+    ASettings/acommandssettingswidget.cpp \
+    ASettings/acommandsettingsform.cpp
 
 HEADERS  += mainwindow.h \
     public.h \
@@ -81,8 +83,11 @@ HEADERS  += mainwindow.h \
     AChart/AChartAxisPainter/achartaxispainter.h \
     asourcecodeform.h \
     ASettings/amysettings.h \
-    ASettings/amysettingsform.h
+    ASettings/amysettingsform.h \
+    ASettings/acommandssettingswidget.h \
+    ASettings/acommandsettingsform.h
 
 FORMS    += mainwindow.ui \
     asourcecodeform.ui \
-    ASettings/amysettingsform.ui
+    ASettings/amysettingsform.ui \
+    ASettings/acommandsettingsform.ui

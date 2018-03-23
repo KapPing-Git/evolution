@@ -47,10 +47,25 @@ public:
   void setLiveObjectProgrammSize(int liveObjectProgrammSize);
   bool liveObjectChangeableProgrammSize() const;
   void setLiveObjectChangeableProgrammSize(bool liveObjectChangeableProgrammSize);
-  bool liveObjectsIfLengthActive();
-  void setLiveObjectsIfLengthActive(bool active);
-
+  ACommandGenerator *commandGenerator();
   AObjectCommonSettings *liveObjectsCommonSettings();
+  int liveObjectStartCount() const;
+  void setLiveObjectStartCount(int liveObjectStartCount);
+  int liveObjectMinCount() const;
+  void setLiveObjectMinCount(int liveObjectMinCount);
+  int foodCount() const;
+  void setFoodCount(int foodCount);
+  int toxinCount() const;
+  void setToxinCount(int toxinCount);
+  int wallCount() const;
+  void setWallCount(int wallCount);
+  qreal liveObjectChangeProgrammSizeChance() const;
+  void setLiveObjectChangeProgrammSizeChance(const qreal &liveObjectChangeProgrammSizeChance);
+
+  int colChildrenForFirstSurvived() const;
+  void setColChildrenForFirstSurvived(int colChildrenForFirstSurvived);
+  qreal nextSurvivedChildrenDecrease() const;
+  void setNextSurvivedChildrenDecrease(const qreal &nextSurvivedChildrenDecrease);
 
 signals:
   void nextGeneration();
@@ -58,11 +73,14 @@ signals:
 public slots:
 
 private:
-  const int LIVE_OBJECT_START_COUNT = 200;
-  const int LIVE_OBJECT_MIN_COUNT = 8;
-  const int FOOD_COUNT = 100;
-  const int TOXIN_COUNT = 10;
-  const int WALL_COUNT = 10;
+  int m_liveObjectStartCount;
+  int m_liveObjectMinCount;
+  int m_colChildrenForFirstSurvived;
+  int m_foodCount;
+  int m_toxinCount;
+  int m_wallCount;
+  qreal m_nextSurvivedChildrenDecrease;// во сколько раз каждый следующий выживший будет давать меньше потомства
+//  EDefinitionMethodOfSurvived m_definitionMethodOfSurvived = definitionMethodOfSurvived_lastN;
   ALiveArena *m_arena;
   QList<ALiveObject *> m_liveObjects;
   QList<ALiveObject *> m_lastSurvived;
@@ -77,6 +95,7 @@ private:
   int m_lastGeneratiolLiveTime;
 
   AObjectCommonSettings m_liveObjectsCommonSettings;
+  ACommandGenerator m_commandGenerator;
   bool m_needStop;
   bool m_border; //края карты непрохродимы
   bool m_constFoodGeneration;// Необходимо ли постоянно генерировать еду
@@ -84,6 +103,7 @@ private:
   bool m_realTimeReproduction;// размножение в реальном времени
   int m_liveObjectProgrammSize; // размер программы живого объекта
   bool m_liveObjectChangeableProgrammSize; //размер программы живого объекта может увеличиваться
+//  qreal m_liveObjectChangeProgrammSizeChance;
 
   void toPlaceBorder();
   void toPlaceNoLiveObject(EObject typeObject,int objectCount,bool searchfreeCell = true);

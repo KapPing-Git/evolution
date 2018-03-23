@@ -4,7 +4,7 @@ ALiveManager::ALiveManager(ALiveArena *arena, QObject *parent) : QObject(parent)
 {
   m_arena = arena;
   m_liveObjectsCommonSettings.arena = m_arena;
-  m_liveObjectsCommonSettings.ifLengthActive = false;
+  m_liveObjectsCommonSettings.generator = &m_commandGenerator;
   m_timerId = 0;
   m_numGeneration = 0;
   m_numPlayedGeneration = 0;
@@ -20,6 +20,13 @@ ALiveManager::ALiveManager(ALiveArena *arena, QObject *parent) : QObject(parent)
   m_realTimeReproduction = false;
   m_liveObjectProgrammSize = 100;
   m_liveObjectChangeableProgrammSize = false;
+  m_liveObjectStartCount = 200;
+  m_liveObjectMinCount = 8;
+  m_colChildrenForFirstSurvived = 25;
+  m_foodCount = 1000;
+  m_toxinCount = 100;
+  m_wallCount = 100;
+  m_nextSurvivedChildrenDecrease = 1;
 }
 
 void ALiveManager::createFirstGeneration()
@@ -30,7 +37,7 @@ void ALiveManager::createFirstGeneration()
     toPlaceBorder();
 
   // размещаем живые объекты
-  for (int i = 0; i < LIVE_OBJECT_START_COUNT;i++)
+  for (int i = 0; i < m_liveObjectStartCount;i++)
     {
       ALiveObject *liveObject = new ALiveObject(&m_liveObjectsCommonSettings,this);
       liveObject->setStartCommandCount(m_liveObjectProgrammSize);
@@ -40,12 +47,13 @@ void ALiveManager::createFirstGeneration()
       setLiveObjectOnArena(liveObject);
     }
   // размещаем неживые объекты
-  toPlaceNoLiveObject(object_food,FOOD_COUNT);
-  toPlaceNoLiveObject(object_toxin,TOXIN_COUNT);
-  toPlaceNoLiveObject(object_wall,WALL_COUNT);
+  toPlaceNoLiveObject(object_food,m_foodCount);
+  toPlaceNoLiveObject(object_toxin,m_toxinCount);
+  toPlaceNoLiveObject(object_wall,m_wallCount);
 
 }
 
+//ПЕРЕДЕЛАТЬ кол-во копий объекта должно быть в соответствии с занимаемым местом, при смерти если осталось меньше 8 заполнять выживших
 void ALiveManager::createNextGeneration()
 {
   //если не было создано первое поколение значит ошибка прерываем функцию
@@ -64,7 +72,6 @@ void ALiveManager::createNextGeneration()
     {
       delete m_lastSurvived[i];
     }
-  //  cloneObjects = m_lastSurvived;
   m_lastSurvived.clear();
 
   //сохраняем выживших
@@ -74,7 +81,7 @@ void ALiveManager::createNextGeneration()
   m_liveObjects.clear();
 
   // клонируем объекты
-  while(m_liveObjects.count() <= LIVE_OBJECT_START_COUNT)
+  while(m_liveObjects.count() <= m_liveObjectStartCount)
     {
       for (int i = 0;i < cloneObjects.count();i++)
         {
@@ -82,7 +89,7 @@ void ALiveManager::createNextGeneration()
           ALiveObject *liveObject;
           int per = qrand() % 100;
           if (per >= 20)
-            liveObject = cloneObjects[i]->clone(this);
+            liveObject = cloneObjects[i]->born(this);
           else
             {
               liveObject = new ALiveObject(&m_liveObjectsCommonSettings,this);
@@ -95,9 +102,9 @@ void ALiveManager::createNextGeneration()
         }
     }
   // размещаем неживые объекты
-  toPlaceNoLiveObject(object_food,FOOD_COUNT);
-  toPlaceNoLiveObject(object_toxin,TOXIN_COUNT);
-  toPlaceNoLiveObject(object_wall,WALL_COUNT);
+  toPlaceNoLiveObject(object_food,m_foodCount);
+  toPlaceNoLiveObject(object_toxin,m_toxinCount);
+  toPlaceNoLiveObject(object_wall,m_wallCount);
   m_numGeneration++;
   m_numPlayedGeneration++;
 
@@ -174,7 +181,7 @@ bool ALiveManager::exec()
                         {
                           if (m_arena->typeObject(x,y) == object_none)
                             {
-                              ALiveObject *newLiveObject = liveObject->clone(this);
+                              ALiveObject *newLiveObject = liveObject->born(this);
                               newLiveObject->setPos(x,y);
                               m_arena->setObject(x,y,object_liveObject,newLiveObject);
                               m_liveObjects << newLiveObject;
@@ -189,11 +196,14 @@ bool ALiveManager::exec()
     }
 
   m_generationLiveTime++;
+  //  if (m_definitionMethodOfSurvived = definitionMethodOfSurvived_lastN)
+  //    {
   //если количество объектов меньше минимального, то позвращаем false как признак невозможности дальнейшей жизнедеятельности
-  if ((m_liveObjects.count() <= LIVE_OBJECT_MIN_COUNT) or !survivedExists)
+  if ((m_liveObjects.count() <= m_liveObjectMinCount) or !survivedExists)
     return false;
   else
     return true;
+  //    }
 }
 
 void ALiveManager::play(int generationCount)
@@ -274,7 +284,7 @@ int ALiveManager::maxLiveTime()
 
 int ALiveManager::minLiveObjectsCount()
 {
-  return LIVE_OBJECT_MIN_COUNT;
+  return m_liveObjectMinCount;
 }
 
 QList<ALiveObject *> ALiveManager::lastSurvived()
@@ -305,7 +315,7 @@ void ALiveManager::setBorder(bool border)
   if (m_border != border)
     {
       m_border = border;
-//      createNextGeneration();
+      //      createNextGeneration();
     }
 }
 
@@ -359,19 +369,105 @@ void ALiveManager::setLiveObjectChangeableProgrammSize(bool liveObjectChangeable
   m_liveObjectChangeableProgrammSize = liveObjectChangeableProgrammSize;
 }
 
-bool ALiveManager::liveObjectsIfLengthActive()
+ACommandGenerator *ALiveManager::commandGenerator()
 {
-  return m_liveObjectsCommonSettings.ifLengthActive;
+  return &m_commandGenerator;
 }
 
-void ALiveManager::setLiveObjectsIfLengthActive(bool active)
-{
-  m_liveObjectsCommonSettings.ifLengthActive = active;
-}
+//bool ALiveManager::liveObjectsIfLengthActive()
+//{
+//  return m_liveObjectsCommonSettings.ifLengthActive;
+//}
+
+//void ALiveManager::setLiveObjectsIfLengthActive(bool active)
+//{
+//  m_liveObjectsCommonSettings.ifLengthActive = active;
+//}
 
 AObjectCommonSettings *ALiveManager::liveObjectsCommonSettings()
 {
   return &m_liveObjectsCommonSettings;
+}
+
+int ALiveManager::liveObjectStartCount() const
+{
+  return m_liveObjectStartCount;
+}
+
+void ALiveManager::setLiveObjectStartCount(int liveObjectStartCount)
+{
+  m_liveObjectStartCount = liveObjectStartCount;
+}
+
+int ALiveManager::liveObjectMinCount() const
+{
+  return m_liveObjectMinCount;
+}
+
+void ALiveManager::setLiveObjectMinCount(int liveObjectMinCount)
+{
+  m_liveObjectMinCount = liveObjectMinCount;
+}
+
+int ALiveManager::foodCount() const
+{
+  return m_foodCount;
+}
+
+void ALiveManager::setFoodCount(int foodCount)
+{
+  m_foodCount = foodCount;
+}
+
+int ALiveManager::toxinCount() const
+{
+  return m_toxinCount;
+}
+
+void ALiveManager::setToxinCount(int toxinCount)
+{
+  m_toxinCount = toxinCount;
+}
+
+int ALiveManager::wallCount() const
+{
+  return m_wallCount;
+}
+
+void ALiveManager::setWallCount(int wallCount)
+{
+  m_wallCount = wallCount;
+}
+
+qreal ALiveManager::liveObjectChangeProgrammSizeChance() const
+{
+  return m_liveObjectsCommonSettings.changeProgrammSizeChance;
+}
+
+void ALiveManager::setLiveObjectChangeProgrammSizeChance(const qreal &liveObjectChangeProgrammSizeChance)
+{
+//  m_liveObjectChangeProgrammSizeChance = liveObjectChangeProgrammSizeChance;
+  m_liveObjectsCommonSettings.changeProgrammSizeChance = liveObjectChangeProgrammSizeChance;
+}
+
+int ALiveManager::colChildrenForFirstSurvived() const
+{
+  return m_colChildrenForFirstSurvived;
+}
+
+void ALiveManager::setColChildrenForFirstSurvived(int colChildrenForFirstSurvived)
+{
+  m_colChildrenForFirstSurvived = colChildrenForFirstSurvived;
+}
+
+qreal ALiveManager::nextSurvivedChildrenDecrease() const
+{
+  return m_nextSurvivedChildrenDecrease;
+}
+
+void ALiveManager::setNextSurvivedChildrenDecrease(const qreal &nextSurvivedChildrenDecrease)
+{
+  m_nextSurvivedChildrenDecrease = nextSurvivedChildrenDecrease;
 }
 
 void ALiveManager::toPlaceBorder()

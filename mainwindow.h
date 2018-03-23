@@ -56,6 +56,7 @@ private:
   AChartSeries *m_liveTimeSeries;
   AMySettings *m_mySettings;
 
+  void applySettings();
   void saveBests(QString fileName, ALiveManager *manager);
   void loadBests(QString fileName, ALiveManager *manager);
   inline QString settingsPath();

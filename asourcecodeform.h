@@ -18,7 +18,7 @@ class ASourceCodeForm : public QWidget
 public:
   explicit ASourceCodeForm(QWidget *parent = 0);
   ~ASourceCodeForm();
-  void setProgramm(QList<ACommand> programm);
+  void setProgramm(QList<AAbstructCommand*> programm);
 
 private:
   Ui::ASourceCodeForm *ui;

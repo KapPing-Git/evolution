@@ -16,7 +16,16 @@ AMySettingsForm::AMySettingsForm(AMySettings *settings, QWidget *parent) :
     ui->openWorldRadioButton->setChecked(true);
   ui->liveObjectProgrammSizeEdit->setText(QString::number(m_settings->liveObjectProgrammSize()));
   ui->liveObjectChangeableProgrammSizeCheckBox->setChecked(m_settings->liveObjectChangeableProgrammSize());
-  ui->liveObjectsIfLengthCheckBox->setChecked(m_settings->liveObjectIfLengthActive());
+  ui->liveObjectChangeProgrammSizeChanceEdit->setText(QString::number(m_settings->liveObjectChangeProgrammSizeChance()));
+  for (int i = 0;i < m_settings->commandDescrCount();i++)
+    {
+      ui->commandsListWidget->addCommandDescription(m_settings->commandName(i),m_settings->commandExist(i),m_settings->commandChance(i));
+    }
+  ui->liveObjectStartCountEdit->setText(QString::number(m_settings->liveObjectStartCount()));
+  ui->liveObjectMinCountEdit->setText(QString::number(m_settings->liveObjectMinCount()));
+  ui->foodCountEdit->setText(QString::number(m_settings->foodCount()));
+  ui->toxinCountEdit->setText(QString::number(m_settings->toxinCount()));
+  ui->wallCountEdit->setText(QString::number(m_settings->wallCount()));
 }
 
 
@@ -38,7 +47,16 @@ void AMySettingsForm::on_applyButton_clicked()
     m_settings->setArenaBorderExist(false);
   m_settings->setLiveObjectProgrammSize(ui->liveObjectProgrammSizeEdit->text().toDouble());
   m_settings->setLiveObjectChangeableProgrammSize(ui->liveObjectChangeableProgrammSizeCheckBox->isChecked());
-  m_settings->setLiveObjectIfLengthActive(ui->liveObjectsIfLengthCheckBox->isChecked());
+  m_settings->setLiveObjectChangeProgrammSizeChance(ui->liveObjectChangeProgrammSizeChanceEdit->text().toFloat());
+  for (int i = 0;i < m_settings->commandDescrCount();i++)
+    {
+      m_settings->setCommandDescr(i,ui->commandsListWidget->name(i),ui->commandsListWidget->exist(i),ui->commandsListWidget->chance(i));
+    }
+  m_settings->setLiveObjectStartCount(ui->liveObjectStartCountEdit->text().toInt());
+  m_settings->setLiveObjectMinCount(ui->liveObjectMinCountEdit->text().toInt());
+  m_settings->setFoodCount(ui->foodCountEdit->text().toInt());
+  m_settings->setToxinCount(ui->toxinCountEdit->text().toInt());
+  m_settings->setWallCount(ui->wallCountEdit->text().toInt());
 
   m_settings->stopTransaction();
 }

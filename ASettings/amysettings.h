@@ -6,11 +6,13 @@
 #include <QDir>
 #include <QFileInfo>
 
+#include "acommand.h"
+
 class AMySettings : public QObject
 {
   Q_OBJECT
 public:
-  explicit AMySettings(QString fileName, QObject *parent = nullptr);
+  explicit AMySettings(QString fileName, ACommandGenerator *commandGenerator, QObject *parent = nullptr);
   ~AMySettings();
 
   void startTransaction();
@@ -28,9 +30,25 @@ public:
   void setLiveObjectProgrammSize(const int &liveObjectProgrammSize);
   bool liveObjectChangeableProgrammSize() const;
   void setLiveObjectChangeableProgrammSize(bool liveObjectChangeableProgrammSize);
+  int commandDescrCount();
+  QString commandName(int num);
+  bool commandExist(int num);
+  int commandChance(int num);
+  void setCommandDescr(int num, QString name,bool exist,int chance);
 
-  bool liveObjectIfLengthActive() const;
-  void setLiveObjectIfLengthActive(bool liveObjectIfLengthActive);
+  int liveObjectStartCount() const;
+  void setLiveObjectStartCount(int liveObjectStartCount);
+  int liveObjectMinCount() const;
+  void setLiveObjectMinCount(int liveObjectMinCount);
+  int foodCount() const;
+  void setFoodCount(int foodCount);
+  int toxinCount() const;
+  void setToxinCount(int toxinCount);
+  int wallCount() const;
+  void setWallCount(int wallCount);
+
+  float liveObjectChangeProgrammSizeChance() const;
+  void setLiveObjectChangeProgrammSizeChance(float liveObjectChangeProgrammSizeChance);
 
 signals:
   void changed();
@@ -47,7 +65,14 @@ private:
   bool m_arenaBorderExist;
   int m_liveObjectProgrammSize;
   bool m_liveObjectChangeableProgrammSize;
-  bool m_liveObjectIfLengthActive;
+  float m_liveObjectChangeProgrammSizeChance;
+  QList<ACommandDescription> m_commandsDescription;
+  int m_liveObjectStartCount;
+  int m_liveObjectMinCount;
+
+  int m_foodCount;
+  int m_toxinCount;
+  int m_wallCount;
 };
 
 #endif // AMYSETTINGS_H
