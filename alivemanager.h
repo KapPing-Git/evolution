@@ -61,7 +61,6 @@ public:
   void setWallCount(int wallCount);
   qreal liveObjectChangeProgrammSizeChance() const;
   void setLiveObjectChangeProgrammSizeChance(const qreal &liveObjectChangeProgrammSizeChance);
-
   int colChildrenForFirstSurvived() const;
   void setColChildrenForFirstSurvived(int colChildrenForFirstSurvived);
   qreal nextSurvivedChildrenDecrease() const;
@@ -75,7 +74,7 @@ public slots:
 private:
   int m_liveObjectStartCount;
   int m_liveObjectMinCount;
-  int m_colChildrenForFirstSurvived;
+  int m_colChildrenForLastSurviveds;
   int m_foodCount;
   int m_toxinCount;
   int m_wallCount;
@@ -83,7 +82,8 @@ private:
 //  EDefinitionMethodOfSurvived m_definitionMethodOfSurvived = definitionMethodOfSurvived_lastN;
   ALiveArena *m_arena;
   QList<ALiveObject *> m_liveObjects;
-  QList<ALiveObject *> m_lastSurvived;
+  QList<ALiveObject *> m_diedObjects;
+  QList<ALiveObject *> m_prevDiedObjects;
   int m_timerId;
 
   int m_numGeneration;
@@ -108,6 +108,7 @@ private:
   void toPlaceBorder();
   void toPlaceNoLiveObject(EObject typeObject,int objectCount,bool searchfreeCell = true);
   void setLiveObjectOnArena(ALiveObject * object);
+  void addNewBornOrCreateObject(ALiveObject *object,int chanceNewObject);
 
   // QObject interface
 protected:

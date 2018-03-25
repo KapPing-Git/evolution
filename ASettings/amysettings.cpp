@@ -23,6 +23,8 @@ AMySettings::AMySettings(QString fileName, ACommandGenerator *commandGenerator, 
   m_foodCount = m_settings->value("foodCount",1000).toInt();
   m_toxinCount = m_settings->value("toxinCount",100).toInt();
   m_wallCount = m_settings->value("wallCount",100).toInt();
+  m_colChildrenForLastSurviveds = m_settings->value("colChildrenForLastSurviveds",25).toInt();
+  m_nextSurvivedChildrenDecrease = m_settings->value("nextSurvivedChildrenDecrease",1).toDouble();
   ////загружаем данные о списке комманд
   QStringList commandsNames = commandGenerator->commandNames();
   m_settings->beginGroup("commandList");
@@ -163,62 +165,62 @@ void AMySettings::setCommandDescr(int num, QString name, bool exist, int chance)
 
 int AMySettings::liveObjectStartCount() const
 {
-    return m_liveObjectStartCount;
+  return m_liveObjectStartCount;
 }
 
 void AMySettings::setLiveObjectStartCount(int liveObjectStartCount)
 {
-    m_liveObjectStartCount = liveObjectStartCount;
-    m_settings->setValue("liveObjectStartCount",liveObjectStartCount);
-    if (!m_transaction) emit changed();
+  m_liveObjectStartCount = liveObjectStartCount;
+  m_settings->setValue("liveObjectStartCount",liveObjectStartCount);
+  if (!m_transaction) emit changed();
 }
 
 int AMySettings::liveObjectMinCount() const
 {
-    return m_liveObjectMinCount;
+  return m_liveObjectMinCount;
 }
 
 void AMySettings::setLiveObjectMinCount(int liveObjectMinCount)
 {
-    m_liveObjectMinCount = liveObjectMinCount;
-    m_settings->setValue("liveObjectMinCount",liveObjectMinCount);
-    if (!m_transaction) emit changed();
+  m_liveObjectMinCount = liveObjectMinCount;
+  m_settings->setValue("liveObjectMinCount",liveObjectMinCount);
+  if (!m_transaction) emit changed();
 }
 
 int AMySettings::foodCount() const
 {
-    return m_foodCount;
+  return m_foodCount;
 }
 
 void AMySettings::setFoodCount(int foodCount)
 {
-    m_foodCount = foodCount;
-    m_settings->setValue("foodCount",foodCount);
-    if (!m_transaction) emit changed();
+  m_foodCount = foodCount;
+  m_settings->setValue("foodCount",foodCount);
+  if (!m_transaction) emit changed();
 }
 
 int AMySettings::toxinCount() const
 {
-    return m_toxinCount;
+  return m_toxinCount;
 }
 
 void AMySettings::setToxinCount(int toxinCount)
 {
-    m_toxinCount = toxinCount;
-    m_settings->setValue("toxinCount",toxinCount);
-    if (!m_transaction) emit changed();
+  m_toxinCount = toxinCount;
+  m_settings->setValue("toxinCount",toxinCount);
+  if (!m_transaction) emit changed();
 }
 
 int AMySettings::wallCount() const
 {
-    return m_wallCount;
+  return m_wallCount;
 }
 
 void AMySettings::setWallCount(int wallCount)
 {
-    m_wallCount = wallCount;
-    m_settings->setValue("wallCount",wallCount);
-    if (!m_transaction) emit changed();
+  m_wallCount = wallCount;
+  m_settings->setValue("wallCount",wallCount);
+  if (!m_transaction) emit changed();
 }
 
 float AMySettings::liveObjectChangeProgrammSizeChance() const
@@ -230,6 +232,30 @@ void AMySettings::setLiveObjectChangeProgrammSizeChance(float liveObjectChangePr
 {
   m_liveObjectChangeProgrammSizeChance = liveObjectChangeProgrammSizeChance;
   m_settings->setValue("liveObjectChangeProgrammSizeChance",liveObjectChangeProgrammSizeChance);
+  if (!m_transaction) emit changed();
+}
+
+int AMySettings::colChildrenForLastSurviveds() const
+{
+  return m_colChildrenForLastSurviveds;
+}
+
+void AMySettings::setColChildrenForLastSurviveds(int colChildrenForLastSurviveds)
+{
+  m_colChildrenForLastSurviveds = colChildrenForLastSurviveds;
+  m_settings->setValue("colChildrenForLastSurviveds",colChildrenForLastSurviveds);
+  if (!m_transaction) emit changed();
+}
+
+int AMySettings::nextSurvivedChildrenDecrease() const
+{
+  return m_nextSurvivedChildrenDecrease;
+}
+
+void AMySettings::setNextSurvivedChildrenDecrease(qreal nextSurvivedChildrenDecrease)
+{
+  m_nextSurvivedChildrenDecrease = nextSurvivedChildrenDecrease;
+  m_settings->setValue("nextSurvivedChildrenDecrease",nextSurvivedChildrenDecrease);
   if (!m_transaction) emit changed();
 }
 

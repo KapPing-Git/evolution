@@ -46,9 +46,12 @@ public:
   void setToxinCount(int toxinCount);
   int wallCount() const;
   void setWallCount(int wallCount);
-
   float liveObjectChangeProgrammSizeChance() const;
   void setLiveObjectChangeProgrammSizeChance(float liveObjectChangeProgrammSizeChance);
+  int colChildrenForLastSurviveds() const;
+  void setColChildrenForLastSurviveds(int colChildrenForLastSurviveds);
+  int nextSurvivedChildrenDecrease() const;
+  void setNextSurvivedChildrenDecrease(qreal nextSurvivedChildrenDecrease);
 
 signals:
   void changed();
@@ -69,10 +72,11 @@ private:
   QList<ACommandDescription> m_commandsDescription;
   int m_liveObjectStartCount;
   int m_liveObjectMinCount;
-
   int m_foodCount;
   int m_toxinCount;
   int m_wallCount;
+  int m_colChildrenForLastSurviveds;
+  qreal m_nextSurvivedChildrenDecrease;
 };
 
 #endif // AMYSETTINGS_H

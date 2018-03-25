@@ -181,6 +181,8 @@ void MainWindow::applySettings()
   m_liveManager->setFoodCount(m_mySettings->foodCount());
   m_liveManager->setToxinCount(m_mySettings->toxinCount());
   m_liveManager->setWallCount(m_mySettings->wallCount());
+  m_liveManager->setColChildrenForFirstSurvived(m_mySettings->colChildrenForLastSurviveds());
+  m_liveManager->setNextSurvivedChildrenDecrease(m_mySettings->nextSurvivedChildrenDecrease());
   for ( int i = 0; i < m_mySettings->commandDescrCount();i++)
     m_liveManager->commandGenerator()->setCommandOptions(m_mySettings->commandName(i),m_mySettings->commandExist(i),m_mySettings->commandChance(i));
 }

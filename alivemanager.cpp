@@ -22,7 +22,7 @@ ALiveManager::ALiveManager(ALiveArena *arena, QObject *parent) : QObject(parent)
   m_liveObjectChangeableProgrammSize = false;
   m_liveObjectStartCount = 200;
   m_liveObjectMinCount = 8;
-  m_colChildrenForFirstSurvived = 25;
+  m_colChildrenForLastSurviveds = 25;
   m_foodCount = 1000;
   m_toxinCount = 100;
   m_wallCount = 100;
@@ -57,7 +57,7 @@ void ALiveManager::createFirstGeneration()
 void ALiveManager::createNextGeneration()
 {
   //если не было создано первое поколение значит ошибка прерываем функцию
-  if (m_liveObjects.isEmpty())
+  if (m_diedObjects.isEmpty())
     {
       createFirstGeneration();
       return;
@@ -66,41 +66,62 @@ void ALiveManager::createNextGeneration()
   m_arena->clear();
   if(m_border)
     toPlaceBorder();
-  QList<ALiveObject*> cloneObjects;
+//  QList<ALiveObject*> cloneObjects;
   // удаляем старые выжившие объекты
-  for (int i = 0;i < m_lastSurvived.count();i++)
+  for (int i = 0;i < m_prevDiedObjects.count();i++)
     {
-      delete m_lastSurvived[i];
+      delete m_prevDiedObjects[i];
     }
-  m_lastSurvived.clear();
+  m_prevDiedObjects.clear();
 
-  //сохраняем выживших
-  m_lastSurvived = m_liveObjects;
-  for (int i = 0; i < m_liveObjects.count();i++)
-    cloneObjects << m_liveObjects[i];
-  m_liveObjects.clear();
+//  //сохраняем выживших
+//  m_prevDiedObjects = m_liveObjects;
+//  for (int i = 0; i < m_liveObjects.count();i++)
+//    cloneObjects << m_liveObjects[i];
+//  m_liveObjects.clear();
 
   // клонируем объекты
-  while(m_liveObjects.count() <= m_liveObjectStartCount)
+  ////клонируем обьекты с постоянным количеством потомков
+  int colCreatedObjects = 0;
+  for (int numObject = 0;numObject < m_liveObjectMinCount;numObject++)
     {
-      for (int i = 0;i < cloneObjects.count();i++)
+      int parentIndex = (m_diedObjects.count() - 1) - numObject;
+      ALiveObject *liveObject = m_diedObjects[parentIndex];
+      for (int numChild = 0;numChild < m_colChildrenForLastSurviveds;numChild++)
         {
-          //определённый процент от существ должен быть новым
-          ALiveObject *liveObject;
-          int per = qrand() % 100;
-          if (per >= 20)
-            liveObject = cloneObjects[i]->born(this);
-          else
-            {
-              liveObject = new ALiveObject(&m_liveObjectsCommonSettings,this);
-              liveObject->setStartCommandCount(m_liveObjectProgrammSize);
-              liveObject->setCommandCountChangeable(m_liveObjectChangeableProgrammSize);
-              liveObject->createChanceProgramm();
-            }
-          m_liveObjects << liveObject;
-          setLiveObjectOnArena(liveObject);
+          addNewBornOrCreateObject(liveObject,20);
+          colCreatedObjects++;
+          if (colCreatedObjects >= m_liveObjectStartCount)
+            break;
         }
+      if (colCreatedObjects >= m_liveObjectStartCount)
+        break;
     }
+
+  ////клонируем обьекты с постоянно уменьшающимся количеством потомков
+  int colChildrenForCurrObject = (m_liveObjectStartCount - colCreatedObjects) / m_nextSurvivedChildrenDecrease;
+  int parentIndex = m_diedObjects.count() - colCreatedObjects - 1;
+  while (colChildrenForCurrObject > 0)
+    {
+      if (parentIndex < 0)
+        break;
+      ALiveObject *liveObject = m_diedObjects[parentIndex];
+      for (int i = 0;i < colChildrenForCurrObject;i++)
+        {
+          addNewBornOrCreateObject(liveObject,20);
+          colCreatedObjects++;
+          if (colCreatedObjects >= m_liveObjectStartCount)
+            break;
+        }
+      if (colCreatedObjects >= m_liveObjectStartCount)
+        break;
+      colChildrenForCurrObject /= m_nextSurvivedChildrenDecrease;
+      parentIndex--;
+    }
+
+  m_prevDiedObjects = m_diedObjects;
+  m_diedObjects.clear();
+
   // размещаем неживые объекты
   toPlaceNoLiveObject(object_food,m_foodCount);
   toPlaceNoLiveObject(object_toxin,m_toxinCount);
@@ -131,36 +152,36 @@ bool ALiveManager::exec()
       m_liveObjects[i]->exec();
     }
 
-  //проверяем не умерли ли все одновременно
-  bool survivedExists = false;
+//  //проверяем не умерли ли все одновременно
+//  bool survivedExists = false;
+//  for (int i = 0;i < m_liveObjects.count();i++)
+//    {
+//      ALiveObject *liveObject = m_liveObjects[i];
+//      if (!liveObject->isDie())
+//        {
+//          survivedExists = true;
+//          break;
+//        }
+//    }
+
+  // удаляем умершие обьекты
+  //  if (survivedExists)
+  //    {
   for (int i = 0;i < m_liveObjects.count();i++)
     {
       ALiveObject *liveObject = m_liveObjects[i];
-      if (!liveObject->isDie())
+      if (liveObject->isDie())
         {
-          survivedExists = true;
-          break;
+          m_arena->setObject(liveObject->x(),liveObject->y(),object_food,NULL);
+          m_diedObjects << liveObject;
+          m_liveObjects.removeAt(i);
+          i--;
         }
     }
-
-  // удаляем умершие обьекты
-  if (survivedExists)
-    {
-      for (int i = 0;i < m_liveObjects.count();i++)
-        {
-          ALiveObject *liveObject = m_liveObjects[i];
-          if (liveObject->isDie())
-            {
-              m_arena->setObject(liveObject->x(),liveObject->y(),object_food,NULL);
-              delete liveObject;
-              m_liveObjects.removeAt(i);
-              i--;
-            }
-        }
-    }
+  //    }
 
   //если надо размножать объекты
-  if (m_realTimeReproduction and survivedExists)
+  if (m_realTimeReproduction)
     {
       for (int i = 0;i < m_liveObjects.count();i++)
         {
@@ -196,11 +217,15 @@ bool ALiveManager::exec()
     }
 
   m_generationLiveTime++;
-  //  if (m_definitionMethodOfSurvived = definitionMethodOfSurvived_lastN)
-  //    {
   //если количество объектов меньше минимального, то позвращаем false как признак невозможности дальнейшей жизнедеятельности
-  if ((m_liveObjects.count() <= m_liveObjectMinCount) or !survivedExists)
-    return false;
+//  if ((m_liveObjects.count() <= m_liveObjectMinCount) or !survivedExists)
+  if (m_liveObjects.count() <= m_liveObjectMinCount)
+    {
+      for (int i = 0;i < m_liveObjects.count();i++)
+        m_diedObjects << m_liveObjects[i];
+      m_liveObjects.clear();
+      return false;
+    }
   else
     return true;
   //    }
@@ -289,7 +314,7 @@ int ALiveManager::minLiveObjectsCount()
 
 QList<ALiveObject *> ALiveManager::lastSurvived()
 {
-  return m_lastSurvived;
+  return m_prevDiedObjects;
 }
 
 void ALiveManager::setBeginObjects(QList<ALiveObject *> objects)
@@ -452,12 +477,12 @@ void ALiveManager::setLiveObjectChangeProgrammSizeChance(const qreal &liveObject
 
 int ALiveManager::colChildrenForFirstSurvived() const
 {
-  return m_colChildrenForFirstSurvived;
+  return m_colChildrenForLastSurviveds;
 }
 
 void ALiveManager::setColChildrenForFirstSurvived(int colChildrenForFirstSurvived)
 {
-  m_colChildrenForFirstSurvived = colChildrenForFirstSurvived;
+  m_colChildrenForLastSurviveds = colChildrenForFirstSurvived;
 }
 
 qreal ALiveManager::nextSurvivedChildrenDecrease() const
@@ -525,6 +550,24 @@ void ALiveManager::setLiveObjectOnArena(ALiveObject *object)
         break;
       tryingCount++;
     }
+}
+
+void ALiveManager::addNewBornOrCreateObject(ALiveObject *object, int chanceNewObject)
+{
+  //определённый процент от существ должен быть новым
+  ALiveObject *newObject;
+  int per = qrand() % 100;
+  if (per >= chanceNewObject)
+    newObject = object->born(this);
+  else
+    {
+      newObject = new ALiveObject(&m_liveObjectsCommonSettings,this);
+      newObject->setStartCommandCount(m_liveObjectProgrammSize);
+      newObject->setCommandCountChangeable(m_liveObjectChangeableProgrammSize);
+      newObject->createChanceProgramm();
+    }
+  m_liveObjects << newObject;
+  setLiveObjectOnArena(newObject);
 }
 
 void ALiveManager::timerEvent(QTimerEvent *event)

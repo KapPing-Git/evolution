@@ -26,6 +26,8 @@ AMySettingsForm::AMySettingsForm(AMySettings *settings, QWidget *parent) :
   ui->foodCountEdit->setText(QString::number(m_settings->foodCount()));
   ui->toxinCountEdit->setText(QString::number(m_settings->toxinCount()));
   ui->wallCountEdit->setText(QString::number(m_settings->wallCount()));
+  ui->colChildrenForLastSurvivedsEdit->setText(QString::number(m_settings->colChildrenForLastSurviveds()));
+  ui->nextSurvivedChildrenDecreaseEdit->setText(QString::number(m_settings->nextSurvivedChildrenDecrease()));
 }
 
 
@@ -57,6 +59,8 @@ void AMySettingsForm::on_applyButton_clicked()
   m_settings->setFoodCount(ui->foodCountEdit->text().toInt());
   m_settings->setToxinCount(ui->toxinCountEdit->text().toInt());
   m_settings->setWallCount(ui->wallCountEdit->text().toInt());
+  m_settings->setColChildrenForLastSurviveds(ui->colChildrenForLastSurvivedsEdit->text().toInt());
+  m_settings->setNextSurvivedChildrenDecrease(ui->nextSurvivedChildrenDecreaseEdit->text().toDouble());
 
   m_settings->stopTransaction();
 }
