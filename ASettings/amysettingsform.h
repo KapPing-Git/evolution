@@ -2,6 +2,7 @@
 #define AMYSETTINGSFORM_H
 
 #include <QWidget>
+#include <QFileDialog>
 #include "ASettings/amysettings.h"
 #include "acommandssettingswidget.h"
 
@@ -19,6 +20,8 @@ public:
 
 private slots:
   void on_applyButton_clicked();
+
+  void on_pushButton_clicked();
 
 private:
   Ui::AMySettingsForm *ui;

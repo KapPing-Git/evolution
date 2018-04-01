@@ -35,7 +35,6 @@ public:
   bool commandExist(int num);
   int commandChance(int num);
   void setCommandDescr(int num, QString name,bool exist,int chance);
-
   int liveObjectStartCount() const;
   void setLiveObjectStartCount(int liveObjectStartCount);
   int liveObjectMinCount() const;
@@ -52,6 +51,10 @@ public:
   void setColChildrenForLastSurviveds(int colChildrenForLastSurviveds);
   int nextSurvivedChildrenDecrease() const;
   void setNextSurvivedChildrenDecrease(qreal nextSurvivedChildrenDecrease);
+  bool autosaveBestGenerations() const;
+  void setAutosaveBestGenerations(bool autosaveBestGenerations);
+  QString autoSavePath() const;
+  void setAutoSavePath(const QString &autoSavePath);
 
 signals:
   void changed();
@@ -77,6 +80,8 @@ private:
   int m_wallCount;
   int m_colChildrenForLastSurviveds;
   qreal m_nextSurvivedChildrenDecrease;
+  bool m_autosaveBestGenerations;
+  QString m_autoSavePath;
 };
 
 #endif // AMYSETTINGS_H

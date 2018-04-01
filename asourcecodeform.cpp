@@ -25,12 +25,6 @@ void ASourceCodeForm::setProgramm(QList<AAbstructCommand *> programm)
         {
           AAbstructIfCommand *ifCommand = (AAbstructIfCommand*)command;
           int adress = ifCommand->commandNum();
-//          if (command.m_commandName == commandName_ifJump)
-//            adress = command.m_command.ifjump.m_commandNum;
-//          if (command.m_commandName == commandName_Jump)
-//            adress = command.m_command.jump.m_commandNum;
-//          if (command.m_commandName == commandName_ifLengthJump)
-//            adress = command.m_command.ifLengthJump.m_commandNum;
           if (!adresses.contains(adress))
             {
               adresses << adress;

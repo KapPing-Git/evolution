@@ -28,6 +28,8 @@ AMySettingsForm::AMySettingsForm(AMySettings *settings, QWidget *parent) :
   ui->wallCountEdit->setText(QString::number(m_settings->wallCount()));
   ui->colChildrenForLastSurvivedsEdit->setText(QString::number(m_settings->colChildrenForLastSurviveds()));
   ui->nextSurvivedChildrenDecreaseEdit->setText(QString::number(m_settings->nextSurvivedChildrenDecrease()));
+  ui->autosaveBestGenerationsCheckBox->setChecked(m_settings->autosaveBestGenerations());
+  ui->autosavePathEdit->setText(m_settings->autoSavePath());
 }
 
 
@@ -61,6 +63,20 @@ void AMySettingsForm::on_applyButton_clicked()
   m_settings->setWallCount(ui->wallCountEdit->text().toInt());
   m_settings->setColChildrenForLastSurviveds(ui->colChildrenForLastSurvivedsEdit->text().toInt());
   m_settings->setNextSurvivedChildrenDecrease(ui->nextSurvivedChildrenDecreaseEdit->text().toDouble());
+  m_settings->setAutosaveBestGenerations(ui->autosaveBestGenerationsCheckBox->isChecked());
+  m_settings->setAutoSavePath(ui->autosavePathEdit->text());
 
   m_settings->stopTransaction();
+}
+
+void AMySettingsForm::on_pushButton_clicked()
+{
+  QFileDialog dirSelectDialod;
+  dirSelectDialod.setFileMode(QFileDialog::DirectoryOnly);
+  dirSelectDialod.exec();
+  QStringList dirs=dirSelectDialod.selectedFiles();
+  if (dirs.count()==1)
+    {
+      ui->autosavePathEdit->setText(dirs.at(0));
+    }
 }

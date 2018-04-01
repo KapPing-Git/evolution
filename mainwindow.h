@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QDataStream>
 #include <QFileDialog>
 

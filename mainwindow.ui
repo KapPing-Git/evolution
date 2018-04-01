@@ -82,6 +82,9 @@
       </item>
       <item>
        <widget class="QLineEdit" name="generationCountEdit">
+        <property name="text">
+         <string>999999</string>
+        </property>
         <property name="placeholderText">
          <string>Кол-во поколений</string>
         </property>
@@ -96,6 +99,9 @@
       </item>
       <item>
        <widget class="QLineEdit" name="timeActionEdit">
+        <property name="text">
+         <string>250</string>
+        </property>
         <property name="placeholderText">
          <string>Время действия мСек.</string>
         </property>

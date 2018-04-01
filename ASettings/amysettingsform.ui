@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>358</width>
-    <height>476</height>
+    <height>530</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -227,6 +227,45 @@
     </layout>
    </item>
    <item>
+    <widget class="QCheckBox" name="autosaveBestGenerationsCheckBox">
+     <property name="toolTip">
+      <string>Автоматически сохранять поколение в файл при достижении максимального времени жизни</string>
+     </property>
+     <property name="text">
+      <string>Автоматически сохранять лучщие поколения</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Папка автосохраниения</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="autosavePathEdit">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../res.qrc">
+         <normaloff>:/icon/icons/fileopen.png</normaloff>:/icon/icons/fileopen.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QPushButton" name="applyButton">
      <property name="text">
       <string>Применить</string>
@@ -256,6 +295,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../res.qrc"/>
+ </resources>
  <connections/>
 </ui>

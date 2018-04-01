@@ -25,6 +25,8 @@ AMySettings::AMySettings(QString fileName, ACommandGenerator *commandGenerator, 
   m_wallCount = m_settings->value("wallCount",100).toInt();
   m_colChildrenForLastSurviveds = m_settings->value("colChildrenForLastSurviveds",25).toInt();
   m_nextSurvivedChildrenDecrease = m_settings->value("nextSurvivedChildrenDecrease",1).toDouble();
+  m_autosaveBestGenerations = m_settings->value("autosaveBestGenerations",false).toBool();
+  m_autoSavePath = m_settings->value("autoSavePath",QDir::homePath() + QDir::separator() + "evolution" + QDir::separator() + "autosave").toString();
   ////загружаем данные о списке комманд
   QStringList commandsNames = commandGenerator->commandNames();
   m_settings->beginGroup("commandList");
@@ -259,14 +261,26 @@ void AMySettings::setNextSurvivedChildrenDecrease(qreal nextSurvivedChildrenDecr
   if (!m_transaction) emit changed();
 }
 
-//bool AMySettings::liveObjectIfLengthActive() const
-//{
-//  return m_liveObjectIfLengthActive;
-//}
+bool AMySettings::autosaveBestGenerations() const
+{
+  return m_autosaveBestGenerations;
+}
 
-//void AMySettings::setLiveObjectIfLengthActive(bool liveObjectIfLengthActive)
-//{
-//  m_liveObjectIfLengthActive = liveObjectIfLengthActive;
-//  m_settings->setValue("liveObjectIfLengthActive",liveObjectIfLengthActive);
-//  if (!m_transaction) emit changed();
-//}
+void AMySettings::setAutosaveBestGenerations(bool autosaveBestGenerations)
+{
+  m_autosaveBestGenerations = autosaveBestGenerations;
+  m_settings->setValue("autosaveBestGenerations",autosaveBestGenerations);
+  if (!m_transaction) emit changed();
+}
+
+QString AMySettings::autoSavePath() const
+{
+  return m_autoSavePath;
+}
+
+void AMySettings::setAutoSavePath(const QString &autoSavePath)
+{
+  m_autoSavePath = autoSavePath;
+  m_settings->setValue("autoSavePath",autoSavePath);
+  if (!m_transaction) emit changed();
+}

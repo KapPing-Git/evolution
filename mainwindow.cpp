@@ -65,12 +65,29 @@ void MainWindow::on_nextGeneration()
   ui->numGenerationLabel->setText(tr("Поколение № ") + numGeneration + tr(" время жизни=") + liveTime + tr(" макс. время жизни=") + maxLiveTime);
   ui->bestSurvivedWidget->addSurveved(m_liveManager->lastSurvived());
   m_liveTimeSeries->addPoint(m_liveManager->numGeneration(),m_liveManager->lastGenerationLiveTime());
-  //  saveBests("/home/kap/liveObjects/отладка/" + QString::number(m_liveManager->numGeneration()) + "_" +
-  //            QString::number(m_liveManager->lastGenerationLiveTime()) + ".live",m_liveManager);
+
+  // если надо сохраняем поколения с максимальным времкенем жизни
+  if (m_mySettings->autosaveBestGenerations())
+    {
+      if (m_liveManager->lastGenerationLiveTime() >= m_liveManager->maxLiveTime())
+        {
+          saveBests(m_mySettings->autoSavePath() + QDir::separator() +
+                    "Поколение №" + QString::number(m_liveManager->numGeneration()) +
+                    " Время жизни " + QString::number(m_liveManager->lastGenerationLiveTime()) + ".live", m_liveManager);
+        }
+    }
 }
 
 void MainWindow::saveBests(QString fileName, ALiveManager *manager)
 {
+  // если необходимая папка отсутствует создаём её
+  QFileInfo fileInfo(fileName);
+  QString path = fileInfo.absolutePath();
+  QDir dir(path);
+  if (!dir.exists())
+    dir.mkpath(path);
+
+  //сохраняем лучших
   QList<ALiveObject*> survived = manager->lastSurvived();
   QFile file(fileName);
   if (file.open(QIODevice::WriteOnly))

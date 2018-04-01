@@ -66,7 +66,6 @@ void ALiveManager::createNextGeneration()
   m_arena->clear();
   if(m_border)
     toPlaceBorder();
-//  QList<ALiveObject*> cloneObjects;
   // удаляем старые выжившие объекты
   for (int i = 0;i < m_prevDiedObjects.count();i++)
     {
@@ -74,11 +73,6 @@ void ALiveManager::createNextGeneration()
     }
   m_prevDiedObjects.clear();
 
-//  //сохраняем выживших
-//  m_prevDiedObjects = m_liveObjects;
-//  for (int i = 0; i < m_liveObjects.count();i++)
-//    cloneObjects << m_liveObjects[i];
-//  m_liveObjects.clear();
 
   // клонируем объекты
   ////клонируем обьекты с постоянным количеством потомков
@@ -152,21 +146,7 @@ bool ALiveManager::exec()
       m_liveObjects[i]->exec();
     }
 
-//  //проверяем не умерли ли все одновременно
-//  bool survivedExists = false;
-//  for (int i = 0;i < m_liveObjects.count();i++)
-//    {
-//      ALiveObject *liveObject = m_liveObjects[i];
-//      if (!liveObject->isDie())
-//        {
-//          survivedExists = true;
-//          break;
-//        }
-//    }
-
   // удаляем умершие обьекты
-  //  if (survivedExists)
-  //    {
   for (int i = 0;i < m_liveObjects.count();i++)
     {
       ALiveObject *liveObject = m_liveObjects[i];
@@ -178,7 +158,6 @@ bool ALiveManager::exec()
           i--;
         }
     }
-  //    }
 
   //если надо размножать объекты
   if (m_realTimeReproduction)
@@ -218,8 +197,7 @@ bool ALiveManager::exec()
 
   m_generationLiveTime++;
   //если количество объектов меньше минимального, то позвращаем false как признак невозможности дальнейшей жизнедеятельности
-//  if ((m_liveObjects.count() <= m_liveObjectMinCount) or !survivedExists)
-  if (m_liveObjects.count() <= m_liveObjectMinCount)
+  if ( (m_liveObjects.count() <= m_liveObjectMinCount) || (m_liveObjects.count() == 1) )
     {
       for (int i = 0;i < m_liveObjects.count();i++)
         m_diedObjects << m_liveObjects[i];
@@ -320,13 +298,14 @@ QList<ALiveObject *> ALiveManager::lastSurvived()
 void ALiveManager::setBeginObjects(QList<ALiveObject *> objects)
 {
   //удаляем старые объекты если есть
-  for (int i = 0;i < m_liveObjects.count();i++)
+  for (int i = 0;i < m_diedObjects.count();i++)
     {
-      delete(m_liveObjects[i]);
+      delete(m_diedObjects[i]);
     }
+  m_diedObjects.clear();
 
   //устанавливаем новые
-  m_liveObjects = objects;
+  m_diedObjects = objects;
   createNextGeneration();
 }
 

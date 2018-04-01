@@ -671,7 +671,7 @@ unsigned int IfLengthJump::exec(AAbstructLiveObject *iAm)
   switch (m_cource)
     {
     case course_down:
-      for (int i = 0;i < m_length;i++)
+      for (int i = 1;i < m_length;i++)
         {
           if (m_arena->typeObject(iAm->x(),iAm->y() + i) != object_none)
             {
@@ -685,7 +685,7 @@ unsigned int IfLengthJump::exec(AAbstructLiveObject *iAm)
       break;
 
     case course_down_left:
-      for (int i = 0;i < m_length;i++)
+      for (int i = 1;i < m_length;i++)
         {
           if (m_arena->typeObject(iAm->x() - i,iAm->y() + i) != object_none)
             {
@@ -699,7 +699,7 @@ unsigned int IfLengthJump::exec(AAbstructLiveObject *iAm)
       break;
 
     case course_down_right:
-      for (int i = 0;i < m_length;i++)
+      for (int i = 1;i < m_length;i++)
         {
           if (m_arena->typeObject(iAm->x() + i,iAm->y() + i) != object_none)
             {
@@ -713,7 +713,7 @@ unsigned int IfLengthJump::exec(AAbstructLiveObject *iAm)
       break;
 
     case course_left:
-      for (int i = 0;i < m_length;i++)
+      for (int i = 1;i < m_length;i++)
         {
           if (m_arena->typeObject(iAm->x() - i,iAm->y()) != object_none)
             {
@@ -727,7 +727,7 @@ unsigned int IfLengthJump::exec(AAbstructLiveObject *iAm)
       break;
 
     case course_right:
-      for (int i = 0;i < m_length;i++)
+      for (int i = 1;i < m_length;i++)
         {
           if (m_arena->typeObject(iAm->x() + i,iAm->y()) != object_none)
             {
@@ -741,7 +741,7 @@ unsigned int IfLengthJump::exec(AAbstructLiveObject *iAm)
       break;
 
     case course_up:
-      for (int i = 0;i < m_length;i++)
+      for (int i = 1;i < m_length;i++)
         {
           if (m_arena->typeObject(iAm->x(),iAm->y() - i) != object_none)
             {
@@ -755,7 +755,7 @@ unsigned int IfLengthJump::exec(AAbstructLiveObject *iAm)
       break;
 
     case course_up_left:
-      for (int i = 0;i < m_length;i++)
+      for (int i = 1;i < m_length;i++)
         {
           if (m_arena->typeObject(iAm->x() - i,iAm->y() - i) != object_none)
             {
@@ -769,7 +769,7 @@ unsigned int IfLengthJump::exec(AAbstructLiveObject *iAm)
       break;
 
     case course_up_right:
-      for (int i = 0;i < m_length;i++)
+      for (int i = 1;i < m_length;i++)
         {
           if (m_arena->typeObject(iAm->x() + i,iAm->y() - i) != object_none)
             {

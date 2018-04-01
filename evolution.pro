@@ -91,3 +91,6 @@ FORMS    += mainwindow.ui \
     asourcecodeform.ui \
     ASettings/amysettingsform.ui \
     ASettings/acommandsettingsform.ui
+
+RESOURCES += \
+    res.qrc
