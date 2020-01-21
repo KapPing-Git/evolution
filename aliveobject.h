@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTime>
 #include <QHash>
+#include <random>
 
 #include "aabstructliveobject.h"
 #include "alivearena.h"

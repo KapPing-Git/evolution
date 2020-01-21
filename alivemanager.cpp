@@ -135,7 +135,7 @@ bool ALiveManager::exec()
   //если надо генерировать еду
   if (m_constFoodGeneration)
     {
-      qreal randNum = drand48();
+      qreal randNum = dRandom(0,1);;
       if (m_foodGenerationChance > randNum)
         toPlaceNoLiveObject(object_food,3,false);
     }

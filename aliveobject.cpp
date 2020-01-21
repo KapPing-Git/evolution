@@ -44,7 +44,7 @@ void ALiveObject::evolution()
     return;
   if (m_commandCountChangeable)
     {
-      qreal changeShance = drand48();
+      qreal changeShance = dRandom(0,1);
       if (changeShance < m_commonSettings->changeProgrammSizeChance)
         {
           //добавляем или удаляем
@@ -155,7 +155,7 @@ ALiveObject *ALiveObject::born(QObject *parent)
   object->m_name = m_name;
 
   //если надо эволюционируем
-  double randVal = drand48();
+  double randVal = dRandom(0,1);
   if (randVal < m_commonSettings->chanceEvolution)
     {
       object->evolution();

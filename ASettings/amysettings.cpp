@@ -11,12 +11,12 @@ AMySettings::AMySettings(QString fileName, ACommandGenerator *commandGenerator, 
 
   //загружаем данные
   m_settings = new QSettings(fileName,QSettings::IniFormat,parent);
-  m_permanentFoodGeneration = m_settings->value("permanentFoodGeneration").toBool();
-  m_foodGenerationChance = m_settings->value("foodGenerationChance").toReal();
-  m_realTimeReproduction = m_settings->value("realTimeReproduction").toBool();
-  m_arenaBorderExist = m_settings->value("arenaBorderExist").toBool();
-  m_liveObjectProgrammSize = m_settings->value("liveObjectProgrammSize").toDouble();
-  m_liveObjectChangeableProgrammSize = m_settings->value("liveObjectChangeableProgrammSize").toBool();
+  m_permanentFoodGeneration = m_settings->value("permanentFoodGeneration",false).toBool();
+  m_foodGenerationChance = m_settings->value("foodGenerationChance",0.1).toReal();
+  m_realTimeReproduction = m_settings->value("realTimeReproduction",false).toBool();
+  m_arenaBorderExist = m_settings->value("arenaBorderExist",false).toBool();
+  m_liveObjectProgrammSize = m_settings->value("liveObjectProgrammSize",50).toDouble();
+  m_liveObjectChangeableProgrammSize = m_settings->value("liveObjectChangeableProgrammSize",true).toBool();
   m_liveObjectChangeProgrammSizeChance = m_settings->value("liveObjectChangeProgrammSizeChance",0.1).toFloat();
   m_liveObjectStartCount = m_settings->value("liveObjectStartCount",200).toInt();
   m_liveObjectMinCount = m_settings->value("liveObjectMinCount",8).toInt();
@@ -35,8 +35,8 @@ AMySettings::AMySettings(QString fileName, ACommandGenerator *commandGenerator, 
       ACommandDescription descr;
       descr.name = commandsNames[i];
       m_settings->beginGroup(commandsNames[i]);
-      descr.exist = m_settings->value("exist").toBool();
-      descr.chance = m_settings->value("chance").toInt();
+      descr.exist = m_settings->value("exist",true).toBool();
+      descr.chance = m_settings->value("chance",1).toInt();
       m_settings->endGroup();
       m_commandsDescription << descr;
     }
